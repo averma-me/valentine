@@ -21,8 +21,9 @@
   .card {
     background: white;
     padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    border-radius: 25px;
+    box-shadow: 0 15px 45px rgba(0,0,0,0.25);
+    position: relative;
   }
 
   h1 {
@@ -70,15 +71,22 @@
 <body>
 
 <div class="card">
-  <h1>Aman loves you ❤️<br>Will you be my Valentine?</h1>
-  <button id="yesBtn" onclick="sayYes()">Yes 😍</button>
+  <h1>Aman ❤️<br>Will you be my Valentine?</h1>
+  <button id="yesBtn">Yes 😍</button>
   <button id="noBtn">No 😜</button>
 </div>
 
+<!-- Sounds (free public domain cute sounds) -->
+<audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+<audio id="yesSound" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
+
 <script>
 const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const popSound = document.getElementById("popSound");
+const yesSound = document.getElementById("yesSound");
 
-/* -------- Slippery Button Logic -------- */
+/* ---------- Slippery Button ---------- */
 document.addEventListener("mousemove", (e) => {
   const rect = noBtn.getBoundingClientRect();
 
@@ -87,28 +95,36 @@ document.addEventListener("mousemove", (e) => {
     e.clientY - (rect.top + rect.height/2)
   );
 
-  // If cursor is near → run away
   if (distance < 120) {
     moveButton();
   }
 });
 
+/* mobile support */
+document.addEventListener("touchstart", moveButton);
+
 function moveButton() {
   const x = Math.random() * (window.innerWidth - 100);
-  const y = Math.random() * (window.innerHeight - 50);
+  const y = Math.random() * (window.innerHeight - 60);
 
   noBtn.style.left = x + "px";
   noBtn.style.top = y + "px";
+
+  popSound.currentTime = 0;
+  popSound.play(); // cute escape sound
 }
 
-/* -------- Yes Click -------- */
-function sayYes() {
+/* ---------- Yes Click ---------- */
+yesBtn.addEventListener("click", () => {
+  yesSound.play();
+
   document.body.innerHTML =
-    "<h1 style='font-size:50px;color:#ff3b7a'>Yayyy ❤️<br>You’re stuck with me forever 😘</h1>";
-  startHearts();
-}
+    "<h1 style='font-size:48px;color:#ff3b7a;text-align:center'>Yayyy ❤️<br>You’re stuck with me forever 😘</h1>";
 
-/* -------- Floating Hearts -------- */
+  startHearts();
+});
+
+/* ---------- Floating Hearts ---------- */
 function startHearts() {
   setInterval(() => {
     const heart = document.createElement("div");
@@ -119,7 +135,7 @@ function startHearts() {
     document.body.appendChild(heart);
 
     setTimeout(() => heart.remove(), 4000);
-  }, 200);
+  }, 180);
 }
 </script>
 
