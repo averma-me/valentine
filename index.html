@@ -11,7 +11,7 @@
     height: 100vh;
     overflow: hidden;
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg,#ff9a9e,#fad0c4);
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -23,19 +23,22 @@
     padding: 40px;
     border-radius: 25px;
     box-shadow: 0 15px 45px rgba(0,0,0,0.25);
+    position: relative;
+    z-index: 5;
   }
 
   h1 {
     color: #ff3b7a;
+    margin-bottom: 25px;
   }
 
   button {
-    padding: 12px 26px;
+    padding: 12px 28px;
     font-size: 18px;
     border-radius: 30px;
     border: none;
     cursor: pointer;
-    margin: 10px;
+    margin: 8px;
     transition: 0.2s;
   }
 
@@ -44,13 +47,17 @@
     color: white;
   }
 
+  .yesBtn:hover {
+    transform: scale(1.1);
+  }
+
   #noBtn {
     background: #eee;
+    position: absolute;
   }
 
   .heart {
     position: fixed;
-    font-size: 20px;
     animation: float 4s linear infinite;
   }
 
@@ -58,107 +65,92 @@
     from { transform: translateY(100vh); opacity: 1; }
     to { transform: translateY(-10vh); opacity: 0; }
   }
-
-  .confetti {
-    position: fixed;
-    width: 8px;
-    height: 8px;
-    background: red;
-    animation: fall 3s linear forwards;
-  }
-
-  @keyframes fall {
-    to {
-      transform: translateY(100vh) rotate(720deg);
-      opacity: 0;
-    }
-  }
 </style>
 </head>
 
 <body>
 
-<div class="card" id="mainCard">
-  <h1>Aman ❤️<br>Will you be my Valentine?</h1>
-
+<div class="card">
+  <h1>From Aman Verma ❤️,<br>Will you be my Valentine?</h1>
   <button class="yesBtn" onclick="sayYes()">Yes 😍</button>
-  <button id="noBtn" onclick="multiplyYes()">No 😜</button>
+  <button id="noBtn">No 😜</button>
 </div>
 
-<!-- sounds -->
+<!-- Cute sounds -->
 <audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
 <audio id="yesSound" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
 
 <script>
+const noBtn = document.getElementById("noBtn");
 const popSound = document.getElementById("popSound");
 const yesSound = document.getElementById("yesSound");
 
-let yesCount = 0;
+/* ---------------- Slippery Button ---------------- */
+document.addEventListener("mousemove", (e) => {
+  const rect = noBtn.getBoundingClientRect();
 
-/* -------- Multiply YES buttons -------- */
-function multiplyYes() {
+  const distance = Math.hypot(
+    e.clientX - (rect.left + rect.width/2),
+    e.clientY - (rect.top + rect.height/2)
+  );
+
+  if (distance < 120) {
+    escapeNo();
+  }
+});
+
+/* mobile support */
+document.addEventListener("touchstart", escapeNo);
+
+function escapeNo() {
+  moveNo();
+  multiplyYes();
   popSound.currentTime = 0;
   popSound.play();
+}
 
+function moveNo() {
+  const x = Math.random() * (window.innerWidth - 100);
+  const y = Math.random() * (window.innerHeight - 60);
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
+}
+
+/* ---------------- Multiplying YES Buttons ---------------- */
+function multiplyYes() {
   for (let i = 0; i < 4; i++) {
     const btn = document.createElement("button");
     btn.innerText = "Yes ❤️";
     btn.className = "yesBtn";
-
     btn.style.position = "absolute";
     btn.style.left = Math.random() * 90 + "vw";
     btn.style.top = Math.random() * 90 + "vh";
-
     btn.onclick = sayYes;
-
     document.body.appendChild(btn);
-  }
-
-  yesCount++;
-
-  if (yesCount > 3) {
-    document.getElementById("noBtn").innerText = "Still No? 😂";
   }
 }
 
-/* -------- YES clicked -------- */
+/* ---------------- Yes Click Celebration ---------------- */
 function sayYes() {
   yesSound.play();
 
   document.body.innerHTML =
-    "<h1 style='font-size:50px;color:#ff3b7a;text-align:center'>YAYYYY ❤️<br>You are officially my Valentine 😘</h1>";
+    "<h1 style='font-size:48px;color:#ff3b7a;text-align:center'>YAYYY ❤️<br>Best decision ever 😘<br>Happy Valentine’s Day 💕</h1>";
 
   startHearts();
-  startConfetti();
 }
 
-/* -------- Hearts -------- */
+/* ---------------- Hearts Animation ---------------- */
 function startHearts() {
   setInterval(() => {
     const heart = document.createElement("div");
     heart.className = "heart";
     heart.innerText = "❤️";
     heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = Math.random() * 20 + 20 + "px";
+    heart.style.fontSize = (Math.random()*25 + 20) + "px";
     document.body.appendChild(heart);
-
     setTimeout(() => heart.remove(), 4000);
-  }, 200);
-}
-
-/* -------- Confetti -------- */
-function startConfetti() {
-  for (let i = 0; i < 120; i++) {
-    const c = document.createElement("div");
-    c.className = "confetti";
-    c.style.left = Math.random() * 100 + "vw";
-    c.style.top = "-10px";
-    c.style.background =
-      ["#ff3b7a","#ffcc00","#00e0ff","#7cff6b"][Math.floor(Math.random()*4)];
-    document.body.appendChild(c);
-
-    setTimeout(() => c.remove(), 3000);
-  }
+  }, 150);
 }
 </script>
 
