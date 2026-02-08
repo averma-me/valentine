@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Will You Be My Valentine? ❤️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Be My Valentine? 💘</title>
 
 <style>
     body {
         margin: 0;
         height: 100vh;
         overflow: hidden;
-        font-family: 'Comic Sans MS', cursive, sans-serif;
+        font-family: "Comic Sans MS", cursive;
         background: linear-gradient(135deg, #ff9a9e, #fad0c4);
         display: flex;
         justify-content: center;
@@ -22,162 +22,174 @@
         background: white;
         padding: 40px;
         border-radius: 25px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         position: relative;
-        max-width: 500px;
+        z-index: 2;
     }
 
     h1 {
-        font-size: 32px;
-        color: #ff4b6e;
-        margin-bottom: 20px;
-        animation: pulse 1.5s infinite;
+        font-size: 2.5rem;
+        color: #ff4d6d;
+        margin-bottom: 30px;
     }
 
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
-    }
-
-    button {
-        padding: 12px 24px;
-        margin: 10px;
-        border-radius: 30px;
+    .btn {
+        padding: 14px 30px;
+        font-size: 20px;
+        border-radius: 40px;
         border: none;
-        font-size: 18px;
         cursor: pointer;
-        transition: 0.3s;
+        transition: transform 0.2s, box-shadow 0.2s;
+        margin: 10px;
+        position: relative;
+    }
+
+    .btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.25);
     }
 
     .yes {
-        background: #ff4b6e;
+        background: #ff4d6d;
         color: white;
     }
 
-    .yes:hover {
-        transform: scale(1.1);
-    }
-
     .no {
-        background: #ddd;
+        background: #444;
+        color: white;
         position: absolute;
     }
 
     .heart {
-        position: fixed;
-        color: red;
-        animation: floatUp 4s linear infinite;
-        font-size: 24px;
+        position: absolute;
+        color: #ff4d6d;
+        font-size: 20px;
+        animation: float 6s linear infinite;
+        opacity: 0.6;
+        z-index: 1;
     }
 
-    @keyframes floatUp {
-        from { transform: translateY(100vh); opacity: 1; }
-        to { transform: translateY(-10vh); opacity: 0; }
+    @keyframes float {
+        0% {transform: translateY(100vh) scale(0.5);}
+        100% {transform: translateY(-10vh) scale(1.5);}
     }
 
-    .success {
+    .message {
         font-size: 28px;
-        color: #ff4b6e;
+        color: #ff4d6d;
         margin-top: 20px;
-        display: none;
     }
 </style>
 </head>
 
 <body>
 
-<div class="card">
-    <h1 id="question">Will you be my Valentine? 💖</h1>
+<div class="card" id="card">
+    <h1>Will you be my Valentine? 💖</h1>
 
-    <div id="buttons">
-        <button class="yes" onclick="yesClicked(this)">YES 💘</button>
-        <button id="noBtn" class="no">NO 🙈</button>
-    </div>
+    <button class="btn yes" onclick="sayYes()">YES 😍</button>
+    <button class="btn no" id="noBtn">NO 😢</button>
 
-    <div id="successMsg" class="success">
-        YAYYY!! 💕  
-        You just made me the happiest person alive 😍💖
-    </div>
+    <div class="message" id="msg"></div>
 </div>
+
+
+<!-- Cute sounds -->
+<audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+<audio id="successSound" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
 
 <script>
 const noBtn = document.getElementById("noBtn");
-const buttonsDiv = document.getElementById("buttons");
-const successMsg = document.getElementById("successMsg");
-const question = document.getElementById("question");
+const card = document.getElementById("card");
+const msg = document.getElementById("msg");
+const pop = document.getElementById("popSound");
+const success = document.getElementById("successSound");
+
+let yesCount = 1;
 
 
-// 💨 Slippery NO button
-function moveNoButton() {
+/* ---------------------------
+   Slippery NO button
+---------------------------- */
+function moveNo() {
     const x = Math.random() * (window.innerWidth - 120);
     const y = Math.random() * (window.innerHeight - 60);
-
     noBtn.style.left = x + "px";
     noBtn.style.top = y + "px";
 }
 
-noBtn.addEventListener("mouseover", moveNoButton);
-noBtn.addEventListener("touchstart", moveNoButton);
+noBtn.addEventListener("mouseover", moveNo);
 
 
-// 💖 Multiplying YES buttons
-function yesClicked(btn) {
+/* ---------------------------
+   Multiply YES buttons
+---------------------------- */
+noBtn.addEventListener("click", () => {
+    pop.play();
+    multiplyYes();
+    moveNo();
+});
 
-    createHeartBurst();
+function multiplyYes() {
+    for(let i=0;i<3;i++){
+        const btn = document.createElement("button");
+        btn.innerText = "YES ❤️";
+        btn.className = "btn yes";
 
-    // create 2 more YES buttons each time
-    for (let i = 0; i < 2; i++) {
-        const newBtn = document.createElement("button");
-        newBtn.innerText = "YES 💘";
-        newBtn.className = "yes";
-        newBtn.onclick = () => yesClicked(newBtn);
+        btn.style.position = "absolute";
+        btn.style.left = Math.random()*window.innerWidth+"px";
+        btn.style.top = Math.random()*window.innerHeight+"px";
 
-        newBtn.style.position = "absolute";
-        newBtn.style.left = Math.random() * window.innerWidth + "px";
-        newBtn.style.top = Math.random() * window.innerHeight + "px";
+        btn.onclick = sayYes;
 
-        document.body.appendChild(newBtn);
-    }
-
-    // after many clicks show success
-    if (document.querySelectorAll(".yes").length > 15) {
-        showSuccess();
+        document.body.appendChild(btn);
     }
 }
 
 
-// 🎉 Success message
-function showSuccess() {
-    question.innerText = "She said YESSSS!!! 💍❤️";
-    successMsg.style.display = "block";
-    noBtn.style.display = "none";
+/* ---------------------------
+   YES clicked
+---------------------------- */
+function sayYes() {
+    success.play();
+    msg.innerHTML = "Yayyyyy!! 💕 I love youuu 😘💍";
+
+    document.body.innerHTML = `
+        <div style="
+            height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            font-size:40px;
+            background:#ff4d6d;
+            color:white;
+            text-align:center;
+            font-family:Comic Sans MS;
+            flex-direction:column;
+        ">
+        💖 She Said YES 💖 <br/>
+        <span style="font-size:24px;margin-top:15px">
+        Best Valentine Ever 🥰
+        </span>
+        </div>
+    `;
 }
 
 
-// 💓 Floating hearts background
-function createHeart() {
+/* ---------------------------
+   Floating hearts animation
+---------------------------- */
+function createHeart(){
     const heart = document.createElement("div");
     heart.className = "heart";
-    heart.innerHTML = "❤️";
-
-    heart.style.left = Math.random() * window.innerWidth + "px";
-    heart.style.fontSize = (20 + Math.random() * 30) + "px";
-
+    heart.innerHTML = "💖";
+    heart.style.left = Math.random()*100+"vw";
+    heart.style.fontSize = (20 + Math.random()*30)+"px";
     document.body.appendChild(heart);
 
-    setTimeout(() => heart.remove(), 4000);
+    setTimeout(()=>heart.remove(), 6000);
 }
-
 setInterval(createHeart, 300);
-
-
-// 💥 Heart burst on YES
-function createHeartBurst() {
-    for (let i = 0; i < 10; i++) {
-        createHeart();
-    }
-}
 </script>
 
 </body>
